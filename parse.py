@@ -28,25 +28,21 @@ class parse():
                 file.close()
                 print(f"File parsed: '{filename}'")
 
-    def getTextPart(self, start_text : str, end_text : list[str]) -> str:
-        result = str()
-        body = False
-        start = start_text
-        if len(end_text) == 1:
-            end = end_text[0]
-        else:
-            end = '|'.join(end_text)
-
+    def getTextPart(self, start_text: str, end_text: list[str]) -> str:
+        res_dict = dict()
         for root, d_names, f_names in os.walk(self.path_result):
             for f in f_names:
                 with open(os.path.join(root, f), 'r', encoding='utf-8') as file:
+                    content = str()
+                    body = False
                     for line in file:
-                        if re.search(start, line):
+                        if re.search(start_text, line) and body == False:
                             body = True
                             continue
-                        if re.search(end, line) and body == True:
+                        if re.search('|'.join(end_text), line) and body == True:
                             body = False
-                            break
+                            continue
                         if body:
-                            result += line
-                    return result
+                            content += line
+                    res_dict[f] = content
+        return res_dict
