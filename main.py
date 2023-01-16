@@ -1,23 +1,3 @@
-import os
+from parse import parsePDF
 
-from pdfminer.high_level import extract_text
-
-path_base = os.getcwd()
-path_pdf = os.path.join(path_base, "pdf")
-path_result = os.path.join(path_base, "result_txt")
-
-"""
-Parses all PDF files in ./pdf/ directory to Text and creates similar folder structure is ./result_txt/ folder 
-"""
-for root, d_names, f_names in os.walk(path_pdf):
-    for f in f_names:
-        filename = f.split('.')[0]
-        path_diff = os.path.relpath(root, path_pdf)
-
-        if not os.path.exists(os.path.join(path_result, path_diff)):
-            os.makedirs(os.path.join(path_result, path_diff))
-
-        file = open(f'{path_result}\\{path_diff}\\{filename}.txt', 'w', encoding='utf-8')
-        file.write(extract_text(os.path.join(root, f)))
-        file.close()
-        print(f"File parsed: '{filename}'")
+parsePDF(source_folder='pdf', result_folder='result_txt')
