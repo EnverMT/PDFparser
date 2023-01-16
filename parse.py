@@ -37,7 +37,13 @@ class parse():
             for f in f_names:
                 res_dict = dict()
                 res_dict['file_name'] = f
-                res_dict['Apparatus'] = self.get_text_part(os.path.join(root,f), 'Apparatus', ['Reagents'])
+                res_dict['Apparatus'] = self.get_text_part(os.path.join(root, f), '[\d+][\.] Apparatus',
+                                                           ['[\d+][\.] Reagents',
+                                                            '[\d+][\.] Procedure',
+                                                            '[\d+][\.] Calibration'])
+                res_dict['Reagents'] = self.get_text_part(os.path.join(root, f), '[\d+][\.] Reagents',
+                                                          ['[\d+][\.] Procedure',
+                                                           '[\d+][\.] Calibration'])
                 result.append(res_dict)
         return result
 

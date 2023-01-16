@@ -8,4 +8,6 @@ res = p.parse_result_files()
 
 df = pd.DataFrame(data=res)
 
-df.to_excel('astm_database.xlsx', index=False)
+print(df)
+
+df.to_excel('db.xlsx', index=False)
