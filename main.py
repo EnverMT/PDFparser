@@ -1,6 +1,7 @@
-from parse import parsePDF
+from parse import parse
 
-parsePDF(source_folder='pdf', result_folder='result_txt')
+p = parse(source_folder='pdf', result_folder='result_txt')
+p.parsePDF()
 
 # to do:
 # parse TXT to Excel file by chapters
