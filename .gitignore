@@ -1,7 +1,8 @@
-.idea
-venv
-pdf/*.*
-result_txt/*.*
+*.xlsx
+
 pdf
 result_txt
-*.xlsx
+
+.idea
+venv
+__pycache__
