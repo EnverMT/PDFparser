@@ -2,12 +2,11 @@ import os
 
 from pdfminer.high_level import extract_text
 
-"""
-Parses all PDF files in ./pdf/ directory to Text and creates similar folder structure is ./result_txt/ folder 
-"""
 
-
-def parsePDF(source_folder : str , result_folder : str ):
+def parsePDF(source_folder: str, result_folder: str):
+    """
+    Parses all PDF files in ./pdf/ directory to Text and creates similar folder structure is ./result_txt/ folder
+    """
     path_base = os.getcwd()
     path_pdf = os.path.join(path_base, source_folder)
     path_result = os.path.join(path_base, result_folder)
