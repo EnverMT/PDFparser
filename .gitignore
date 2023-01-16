@@ -1,0 +1,6 @@
+.idea
+venv
+pdf/*.*
+result_txt/*.*
+pdf
+result_txt
