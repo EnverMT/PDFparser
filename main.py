@@ -1,8 +1,11 @@
+import pandas as pd
+
 from parse import parse
 
 p = parse(source_folder='pdf', result_folder='result_txt')
 p.parsePDF()
-print(p.getTextPart('Apparatus', ['Reagents']))
+res = p.parse_result_files()
 
-# to do:
-# parse TXT to Excel file by chapters
+df = pd.DataFrame(data=res)
+
+df.to_excel('astm_database.xlsx', index=False)
