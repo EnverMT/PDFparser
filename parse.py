@@ -28,7 +28,7 @@ class parse():
                 file.close()
                 print(f"File parsed: '{filename}'")
 
-    def parse_result_files(self) -> str:
+    def parse_result_files(self) -> list:
         """
         Parse all TXT files to Pandas Dataframe
         """
@@ -44,15 +44,19 @@ class parse():
                 res_dict['Reagents'] = self.get_text_part(os.path.join(root, f), '[\d+][\.] Reagents',
                                                           ['[\d+][\.] Procedure',
                                                            '[\d+][\.] Calibration'])
+                res_dict['Standart ID'] = self.get_text_exact(os.path.join(root, f), 'Designation: (.+)')
+                res_dict['Method name'] = self.get_text_part(os.path.join(root, f), 'Standard Test Methods',
+                                                             ['This standard is issued under'])
+
                 result.append(res_dict)
         return result
 
-    def get_text_part(self, filePath, start_text, end_text):
+    def get_text_part(self, filePath: str, start_text: str, end_text: str) -> str:
         """
         Get text between Start_text and End_text
         """
+        content = str()
         with open(filePath, 'r', encoding='utf-8') as file:
-            content = str()
             body = False
             for line in file:
                 if re.search(start_text, line) and body == False:
@@ -62,4 +66,16 @@ class parse():
                     break
                 if body:
                     content += line
-            return content
+        return content.strip()
+
+    def get_text_exact(self, filePath: str, rePattern: str) -> str:
+        """
+        Get one line of text matching the pattern RePattern
+        """
+        content = str()
+        with open(filePath, 'r', encoding='utf-8') as file:
+            body = False
+            for line in file:
+                if re.search(rePattern, line) and body == False:
+                    return re.search(rePattern, line).group(1)
+        return content.strip()
