@@ -11,10 +11,8 @@ class parse():
         self.path_result = os.path.join(self.path_base, result_folder)
 
         self.file_count = 0
-        for path in os.listdir(self.path_pdf):
-            # check if current path is a file
-            if os.path.isfile(os.path.join(self.path_pdf, path)):
-                self.file_count += 1
+        for root_dir, cur_dir, files in os.walk(self.path_pdf):
+            self.file_count += len(files)
 
     def parsePDF(self, skip_parsed_files: bool = False):
         """
