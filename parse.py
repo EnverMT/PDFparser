@@ -10,23 +10,38 @@ class parse():
         self.path_pdf = os.path.join(self.path_base, source_folder)
         self.path_result = os.path.join(self.path_base, result_folder)
 
-    def parsePDF(self):
+        self.file_count = 0
+        for path in os.listdir(self.path_pdf):
+            # check if current path is a file
+            if os.path.isfile(os.path.join(self.path_pdf, path)):
+                self.file_count += 1
+
+    def parsePDF(self, skip_parsed_files: bool = False):
         """
         Parses all PDF files in Source folder to Text and creates similar folder structure is Result folder
         """
+        parsed_files = 0
 
         for root, d_names, f_names in os.walk(self.path_pdf):
             for f in f_names:
+                parsed_files += 1
                 filename = f.split('.')[0]
                 path_diff = os.path.relpath(root, self.path_pdf)
 
+                # Create folder if not exist
                 if not os.path.exists(os.path.join(self.path_result, path_diff)):
                     os.makedirs(os.path.join(self.path_result, path_diff))
 
-                file = open(f'{self.path_result}\\{path_diff}\\{filename}.txt', 'w', encoding='utf-8')
+                file_path = f'{self.path_result}\\{path_diff}\\{filename}.txt'
+
+                if os.path.exists(file_path) and skip_parsed_files == True:
+                    print(f'File {parsed_files}/{self.file_count} File already exists, Skipping: {filename}')
+                    continue
+
+                file = open(file_path, 'w', encoding='utf-8')
                 file.write(extract_text(os.path.join(root, f)))
                 file.close()
-                print(f"File parsed: '{filename}'")
+                print(f"File {parsed_files}/{self.file_count} parsed: '{filename}'")
 
     def parse_result_files(self) -> list:
         """
@@ -79,3 +94,6 @@ class parse():
                 if re.search(rePattern, line) and body == False:
                     return re.search(rePattern, line).group(1)
         return content.strip()
+
+    def is_pdf_already_parsed(self):
+        pass
