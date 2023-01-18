@@ -23,6 +23,7 @@ class parse():
         for root, d_names, f_names in os.walk(self.path_pdf):
             for f in f_names:
                 parsed_files += 1
+                completion_percent = parsed_files / self.file_count
                 filename = f.split('.')[0]
                 path_diff = os.path.relpath(root, self.path_pdf)
 
@@ -33,13 +34,14 @@ class parse():
                 file_path = f'{self.path_result}\\{path_diff}\\{filename}.txt'
 
                 if os.path.exists(file_path) and skip_parsed_files == True:
-                    print(f'File {parsed_files}/{self.file_count} File already exists, Skipping: {filename}')
+                    print(
+                        f'Progress: {completion_percent * 100:.2f}% File {parsed_files}/{self.file_count} File already exists, Skipping: {filename}')
                     continue
 
                 file = open(file_path, 'w', encoding='utf-8')
                 file.write(extract_text(os.path.join(root, f)))
                 file.close()
-                print(f"File {parsed_files}/{self.file_count} parsed: '{filename}'")
+                print(f"Progress: {completion_percent * 100:.2f}% File {parsed_files}/{self.file_count} parsed: '{filename}'")
 
     def parse_result_files(self) -> list:
         """
