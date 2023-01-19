@@ -14,6 +14,10 @@ class parse():
         for root_dir, cur_dir, files in os.walk(self.path_pdf):
             self.file_count += len(files)
 
+        self.result_file_count = 0
+        for root_dir, cur_dir, files in os.walk(self.path_result):
+            self.result_file_count += len(files)
+
     def parsePDF(self, skip_parsed_files: bool = False):
         """
         Parses all PDF files in Source folder to Text and creates similar folder structure is Result folder
@@ -60,14 +64,14 @@ class parse():
                 res_dict['Reagents'] = self.get_text_part(os.path.join(root, f), '[\d+][\.] Reagents',
                                                           ['[\d+][\.] Procedure',
                                                            '[\d+][\.] Calibration'])
-                res_dict['Standart ID'] = self.get_text_exact(os.path.join(root, f), 'Designation: (.+)')
-                res_dict['Method name'] = self.get_text_part(os.path.join(root, f), 'Standard Test Methods',
+                res_dict['Standart_ID'] = self.get_text_exact(os.path.join(root, f), 'Designation: (.+)')
+                res_dict['Method_name'] = self.get_text_part(os.path.join(root, f), 'Standard Test Methods',
                                                              ['This standard is issued under'])
 
                 result.append(res_dict)
 
                 count += 1
-                print(f'Progress: {count}/{self.file_count} TXT file parsed: {f}')
+                print(f'Progress: {count / self.result_file_count * 100 :.2f}% TXT file parsed: {f}')
         return result
 
     def get_text_part(self, filePath: str, start_text: str, end_text: str) -> str:
