@@ -22,6 +22,7 @@ table_name = 'ASTM'
 query = f'DROP TABLE IF EXISTS {table_name}'
 conn.execute(query)
 conn.commit()
+print("Table Dropped")
 
 query = f'''Create table if not Exists {table_name} (file_name text, 
                                                     Apparatus text, 
@@ -31,5 +32,6 @@ query = f'''Create table if not Exists {table_name} (file_name text,
 conn.execute(query)
 df.to_sql(table_name, conn, if_exists='replace', index=False)
 conn.commit()
+print("Table saved to Database")
 
 conn.close()
