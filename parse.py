@@ -5,7 +5,7 @@ import re
 from pdfminer.high_level import extract_text
 
 
-class parse():
+class Parse:
     def __init__(self, source_folder: str, result_folder: str):
         self.path_base = os.getcwd()
         self.path_pdf = os.path.join(self.path_base, source_folder)
@@ -67,29 +67,30 @@ class parse():
             for f in f_names:
                 res_dict = dict()
                 res_dict['file_name'] = f
-                res_dict['Apparatus'] = self._get_text_part(os.path.join(root, f), '[\d+][\.] Apparatus',
+                res_dict['Apparatus'] = self._get_text_part(os.path.join(root, f), ['[\d+][\.] Apparatus'],
                                                             ['[\d+][\.] Reagents',
                                                              '[\d+][\.] Procedure',
                                                              '[\d+][\.] Calibration'])
-                res_dict['Reagents'] = self._get_text_part(os.path.join(root, f), '[\d+][\.] Reagents',
+                res_dict['Reagents'] = self._get_text_part(os.path.join(root, f), ['[\d+][\.] Reagents'],
                                                            ['[\d+][\.] Procedure',
                                                             '[\d+][\.] Calibration'])
                 res_dict['Standart_ID'] = self._get_text_exact(os.path.join(root, f), 'Designation: (.+)')
-                res_dict['Method_name'] = self._get_text_part(os.path.join(root, f), 'Standard Test Methods',
+                res_dict['Method_name'] = self._get_text_part(os.path.join(root, f), ['Standard Test Methods'],
                                                               ['This standard is issued under'])
 
                 result.append(res_dict)
 
                 count += 1
-                self._print_progress(count / self.result_file_count, message=f'Files count: {count}/{self.result_file_count} | TXT file parsed: {f}')
+                self._print_progress(count / self.result_file_count,
+                                     message=f'Files count: {count}/{self.result_file_count} | TXT file parsed: {f}')
         return result
 
-    def _get_text_part(self, filePath: str, start_text: list[str], end_text: list[str]) -> str:
+    def _get_text_part(self, file_path: str, start_text: list[str], end_text: list[str]) -> str:
         """
         Get text between Start_text and End_text
         """
         content = str()
-        with open(filePath, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             body = False
             for line in file:
                 if re.search('|'.join(start_text), line) and body == False:
@@ -101,12 +102,12 @@ class parse():
                     content += line
         return content.strip()
 
-    def _get_text_exact(self, filePath: str, rePattern: str) -> str:
+    def _get_text_exact(self, file_path: str, rePattern: str) -> str:
         """
         Get one line of text matching the pattern RePattern
         """
         content = str()
-        with open(filePath, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             body = False
             for line in file:
                 if re.search(rePattern, line) and body == False:

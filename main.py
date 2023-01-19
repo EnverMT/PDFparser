@@ -2,9 +2,9 @@ import sqlite3
 
 import pandas as pd
 
-from parse import parse
+from parse import Parse
 
-p = parse(source_folder='pdf', result_folder='result_txt')
+p = Parse(source_folder='pdf', result_folder='result_txt')
 # p.parsePDF(skip_parsed_files=True)  # Use parse only once, After parsing should be commented
 res = p.parse_result_files()
 
