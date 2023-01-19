@@ -15,9 +15,11 @@ df = pd.DataFrame(data=res)
 # Something wrong with Excel file, some error with not allowed symbol in .xlsx file
 # df.to_excel('db.xlsx', index=False)
 
+# Export parse result to Sqlite3 database
 conn = sqlite3.connect('db.sqlite')
 table_name = 'ASTM'
-query = f'''Create table if not Exists {table_name} (file_name text, 
+query = f''' DROP TABLE IF EXISTS {table_name};
+             Create table if not Exists {table_name} (file_name text, 
                                                     Apparatus text, 
                                                     Reagents text, 
                                                     Standart_ID text, 
