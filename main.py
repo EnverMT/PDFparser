@@ -18,8 +18,12 @@ df = pd.DataFrame(data=res)
 # Export parse result to Sqlite3 database
 conn = sqlite3.connect('db.sqlite')
 table_name = 'ASTM'
-query = f''' DROP TABLE IF EXISTS {table_name};
-             Create table if not Exists {table_name} (file_name text, 
+
+query = f'DROP TABLE IF EXISTS {table_name}'
+conn.execute(query)
+conn.commit()
+
+query = f'''Create table if not Exists {table_name} (file_name text, 
                                                     Apparatus text, 
                                                     Reagents text, 
                                                     Standart_ID text, 
@@ -27,4 +31,5 @@ query = f''' DROP TABLE IF EXISTS {table_name};
 conn.execute(query)
 df.to_sql(table_name, conn, if_exists='replace', index=False)
 conn.commit()
+
 conn.close()

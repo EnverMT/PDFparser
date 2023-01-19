@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 
@@ -10,6 +11,7 @@ class parse():
         self.path_pdf = os.path.join(self.path_base, source_folder)
         self.path_result = os.path.join(self.path_base, result_folder)
         self._count_files()
+        self.progress_reported_time = datetime.datetime.utcnow()
 
     def _count_files(self):
         self.file_count = 0
@@ -24,7 +26,7 @@ class parse():
         """
         Parses all PDF files in Source folder to Text and creates similar folder structure is Result folder
         """
-        parsed_files = 0
+        count = 0
 
         for root, d_names, f_names in os.walk(self.path_pdf):
             for f in f_names:
@@ -32,8 +34,8 @@ class parse():
                     print(f'Not PDF file. Skipped. Filename={f}')
                     continue
 
-                parsed_files += 1
-                completion_percent = parsed_files / self.file_count
+                count += 1
+                completion_percent = count / self.file_count
                 filename = f.split('.')[0]
                 path_diff = os.path.relpath(root, self.path_pdf)
 
@@ -43,16 +45,16 @@ class parse():
 
                 file_path = f'{self.path_result}\\{path_diff}\\{filename}.txt'
 
-                if os.path.exists(file_path) and skip_parsed_files == True:
-                    print(
-                        f'Progress: {completion_percent * 100:.2f}% File {parsed_files}/{self.file_count} File already exists, Skipping: {filename}')
+                if os.path.exists(file_path) and skip_parsed_files:
+                    self._print_progress(count / self.result_file_count,
+                                         message=f'Files count: {count}/{self.file_count} | File already exists, Skipping: {f}')
                     continue
 
                 file = open(file_path, 'w', encoding='utf-8')
                 file.write(extract_text(os.path.join(root, f)))
                 file.close()
-                print(
-                    f"Progress: {completion_percent * 100:.2f}% File {parsed_files}/{self.file_count} parsed: '{filename}'")
+                self._print_progress(count / self.result_file_count,
+                                     message=f'Files count: {count}/{self.file_count} | PDF file parsed: {f}')
         self._count_files()
 
     def parse_result_files(self) -> list:
@@ -79,7 +81,7 @@ class parse():
                 result.append(res_dict)
 
                 count += 1
-                print(f'Progress: {count / self.result_file_count * 100 :.2f}% TXT file parsed: {f}')
+                self._print_progress(count / self.result_file_count, message=f'Files count: {count}/{self.result_file_count} | TXT file parsed: {f}')
         return result
 
     def _get_text_part(self, filePath: str, start_text: list[str], end_text: list[str]) -> str:
@@ -110,3 +112,10 @@ class parse():
                 if re.search(rePattern, line) and body == False:
                     return re.search(rePattern, line).group(1)
         return content.strip()
+
+    def _print_progress(self, progress_value: float, message: str):
+        if (datetime.datetime.utcnow() - self.progress_reported_time).total_seconds() < 1:
+            return
+
+        self.progress_reported_time = datetime.datetime.utcnow()
+        print(f'Progress: {progress_value * 100 :.2f}% | {message}')
