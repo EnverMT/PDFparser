@@ -82,7 +82,7 @@ class parse():
                 print(f'Progress: {count / self.result_file_count * 100 :.2f}% TXT file parsed: {f}')
         return result
 
-    def _get_text_part(self, filePath: str, start_text: str, end_text: str) -> str:
+    def _get_text_part(self, filePath: str, start_text: list[str], end_text: list[str]) -> str:
         """
         Get text between Start_text and End_text
         """
@@ -90,7 +90,7 @@ class parse():
         with open(filePath, 'r', encoding='utf-8') as file:
             body = False
             for line in file:
-                if re.search(start_text, line) and body == False:
+                if re.search('|'.join(start_text), line) and body == False:
                     body = True
                     continue
                 if re.search('|'.join(end_text), line) and body == True:
