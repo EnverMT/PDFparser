@@ -22,7 +22,7 @@ class Parse:
         for root_dir, cur_dir, files in os.walk(self.path_result):
             self.result_file_count += len(files)
 
-    def parsePDF(self, skip_parsed_files: bool = False):
+    def parse_pdf(self, skip_parsed_files: bool = False):
         """
         Parses all PDF files in Source folder to Text and creates similar folder structure is Result folder
         """
@@ -35,7 +35,6 @@ class Parse:
                     continue
 
                 count += 1
-                completion_percent = count / self.file_count
                 filename = f.split('.')[0]
                 path_diff = os.path.relpath(root, self.path_pdf)
 
@@ -47,7 +46,8 @@ class Parse:
 
                 if os.path.exists(file_path) and skip_parsed_files:
                     self._print_progress(count / self.result_file_count,
-                                         message=f'Files count: {count}/{self.file_count} | File already exists, Skipping: {f}')
+                                         message=f'''Files count: {count}/{self.file_count} 
+                                         | File already exists, Skipping: {f}''')
                     continue
 
                 file = open(file_path, 'w', encoding='utf-8')
@@ -85,7 +85,8 @@ class Parse:
                                      message=f'Files count: {count}/{self.result_file_count} | TXT file parsed: {f}')
         return result
 
-    def _get_text_part(self, file_path: str, start_text: list[str], end_text: list[str]) -> str:
+    @staticmethod
+    def _get_text_part(file_path: str, start_text: list[str], end_text: list[str]) -> str:
         """
         Get text between Start_text and End_text
         """
@@ -93,16 +94,17 @@ class Parse:
         with open(file_path, 'r', encoding='utf-8') as file:
             body = False
             for line in file:
-                if re.search('|'.join(start_text), line) and body == False:
+                if re.search('|'.join(start_text), line) and not body:
                     body = True
                     continue
-                if re.search('|'.join(end_text), line) and body == True:
+                if re.search('|'.join(end_text), line) and body:
                     break
                 if body:
                     content += line
         return content.strip()
 
-    def _get_text_exact(self, file_path: str, rePattern: str) -> str:
+    @staticmethod
+    def _get_text_exact(file_path: str, re_pattern: str) -> str:
         """
         Get one line of text matching the pattern RePattern
         """
@@ -110,8 +112,8 @@ class Parse:
         with open(file_path, 'r', encoding='utf-8') as file:
             body = False
             for line in file:
-                if re.search(rePattern, line) and body == False:
-                    return re.search(rePattern, line).group(1)
+                if re.search(re_pattern, line) and not body:
+                    return re.search(re_pattern, line).group(1)
         return content.strip()
 
     def _print_progress(self, progress_value: float, message: str):
