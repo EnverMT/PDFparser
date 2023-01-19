@@ -9,7 +9,9 @@ class parse():
         self.path_base = os.getcwd()
         self.path_pdf = os.path.join(self.path_base, source_folder)
         self.path_result = os.path.join(self.path_base, result_folder)
+        self._count_files()
 
+    def _count_files(self):
         self.file_count = 0
         for root_dir, cur_dir, files in os.walk(self.path_pdf):
             self.file_count += len(files)
@@ -45,7 +47,9 @@ class parse():
                 file = open(file_path, 'w', encoding='utf-8')
                 file.write(extract_text(os.path.join(root, f)))
                 file.close()
-                print(f"Progress: {completion_percent * 100:.2f}% File {parsed_files}/{self.file_count} parsed: '{filename}'")
+                print(
+                    f"Progress: {completion_percent * 100:.2f}% File {parsed_files}/{self.file_count} parsed: '{filename}'")
+        self._count_files()
 
     def parse_result_files(self) -> list:
         """
@@ -57,16 +61,16 @@ class parse():
             for f in f_names:
                 res_dict = dict()
                 res_dict['file_name'] = f
-                res_dict['Apparatus'] = self.get_text_part(os.path.join(root, f), '[\d+][\.] Apparatus',
-                                                           ['[\d+][\.] Reagents',
-                                                            '[\d+][\.] Procedure',
+                res_dict['Apparatus'] = self._get_text_part(os.path.join(root, f), '[\d+][\.] Apparatus',
+                                                            ['[\d+][\.] Reagents',
+                                                             '[\d+][\.] Procedure',
+                                                             '[\d+][\.] Calibration'])
+                res_dict['Reagents'] = self._get_text_part(os.path.join(root, f), '[\d+][\.] Reagents',
+                                                           ['[\d+][\.] Procedure',
                                                             '[\d+][\.] Calibration'])
-                res_dict['Reagents'] = self.get_text_part(os.path.join(root, f), '[\d+][\.] Reagents',
-                                                          ['[\d+][\.] Procedure',
-                                                           '[\d+][\.] Calibration'])
-                res_dict['Standart_ID'] = self.get_text_exact(os.path.join(root, f), 'Designation: (.+)')
-                res_dict['Method_name'] = self.get_text_part(os.path.join(root, f), 'Standard Test Methods',
-                                                             ['This standard is issued under'])
+                res_dict['Standart_ID'] = self._get_text_exact(os.path.join(root, f), 'Designation: (.+)')
+                res_dict['Method_name'] = self._get_text_part(os.path.join(root, f), 'Standard Test Methods',
+                                                              ['This standard is issued under'])
 
                 result.append(res_dict)
 
@@ -74,7 +78,7 @@ class parse():
                 print(f'Progress: {count / self.result_file_count * 100 :.2f}% TXT file parsed: {f}')
         return result
 
-    def get_text_part(self, filePath: str, start_text: str, end_text: str) -> str:
+    def _get_text_part(self, filePath: str, start_text: str, end_text: str) -> str:
         """
         Get text between Start_text and End_text
         """
@@ -91,7 +95,7 @@ class parse():
                     content += line
         return content.strip()
 
-    def get_text_exact(self, filePath: str, rePattern: str) -> str:
+    def _get_text_exact(self, filePath: str, rePattern: str) -> str:
         """
         Get one line of text matching the pattern RePattern
         """
@@ -102,6 +106,3 @@ class parse():
                 if re.search(rePattern, line) and body == False:
                     return re.search(rePattern, line).group(1)
         return content.strip()
-
-    def is_pdf_already_parsed(self):
-        pass
