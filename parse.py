@@ -28,6 +28,10 @@ class parse():
 
         for root, d_names, f_names in os.walk(self.path_pdf):
             for f in f_names:
+                if not f.endswith('.pdf'):
+                    print(f'Not PDF file. Skipped. Filename={f}')
+                    continue
+
                 parsed_files += 1
                 completion_percent = parsed_files / self.file_count
                 filename = f.split('.')[0]
