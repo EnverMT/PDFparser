@@ -48,6 +48,7 @@ class parse():
         Parse all TXT files to Pandas Dataframe
         """
         result = []
+        count = 0
         for root, d_names, f_names in os.walk(self.path_result):
             for f in f_names:
                 res_dict = dict()
@@ -64,6 +65,9 @@ class parse():
                                                              ['This standard is issued under'])
 
                 result.append(res_dict)
+
+                count += 1
+                print(f'Progress: {count}/{self.file_count} TXT file parsed: {f}')
         return result
 
     def get_text_part(self, filePath: str, start_text: str, end_text: str) -> str:
